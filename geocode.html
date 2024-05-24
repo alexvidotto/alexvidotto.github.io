@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Map App</title>
+  <style>
+    body,html {margin:0;padding:0}
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    #search-container {
+      position: absolute;
+      top: 10px;
+      left: 300px;
+      background-color: white;
+      padding: 5px;
+      z-index: 1;
+    }
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA8AFCTxB2Dez4qdd_WJUW588BP6zxUWh8&libraries=places&callback=initMap" async defer></script> 
+  <script>
+    let map;
+    let geocoder;
+    let infowindow;
+    let marker;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 0, lng: 0 },
+        zoom: 2,
+      });
+      geocoder = new google.maps.Geocoder();
+      infowindow = new google.maps.InfoWindow();
+      marker = new google.maps.Marker({ map: map });
+    }
+
+    function codeAddress() {
+      const address = document.getElementById("address").value;
+      geocoder.geocode({ 'address': address }, function(results, status) {
+        if (status === 'OK') {
+          map.setCenter(results[0].geometry.location);
+          marker.setPosition(results[0].geometry.location);
+          infowindow.setContent(JSON.stringify(results[0], null, 2));
+          infowindow.open(map, marker);
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <div id="search-container">
+    <input id="address" type="text" placeholder="Enter address or coordinates">
+    <button onclick="codeAddress()">Search</button>
+  </div>
+  <div id="map"></div>
+</body>
+</html>
